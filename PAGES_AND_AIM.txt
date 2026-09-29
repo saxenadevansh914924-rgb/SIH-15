@@ -1,0 +1,95 @@
+WATERSHED INSIGHT — PROJECT AIM AUR PAGE GUIDE
+================================================
+
+PROJECT KA AIM
+--------------
+Watershed Insight ka aim watershed planning aur monitoring ko spatial
+information ke saath samajhne layak banana hai. Platform field se aayi
+geo-coded photos, watershed boundaries, interventions aur remote-sensing
+jaise indicators ko ek jagah dikhata hai.
+
+Is prototype ka main flow:
+Field images + GIS layers + satellite-data concept
+                    -> spatial analysis
+                    -> watershed insights
+                    -> monitoring aur decision support
+
+Yeh ek demonstration prototype hai. Ismein dikhaye gaye maps ke watershed
+polygons, photo records, intervention records, land-use values aur analysis
+numbers mock/demo data hain. Live SRISHTI-DRISHTI feed ya trained production
+AI image model connected nahi hai.
+
+
+HAR PAGE KYA KARTA HAI
+----------------------
+
+1. OVERVIEW  (/)
+   Maksad: Ek nazar mein monitoring ki overall sthiti batana.
+   Kaam: Watersheds, geo-coded images, interventions, water bodies,
+   vegetation coverage aur monitored area ke summary numbers dikhata hai.
+   Monitoring trend, intervention distribution aur recent field updates bhi
+   yahan dekhe ja sakte hain.
+
+2. WATERSHEDS  (/watersheds)
+   Maksad: Monitored watershed areas ki list aur unka quick comparison.
+   Kaam: Watershed name/district search, area, vegetation, water area,
+   interventions aur active status dikhata hai. Kisi row ko select karne par
+   us watershed ka detail page khulta hai.
+
+3. WATERSHED DETAILS  (/watersheds/:id)
+   Maksad: Ek selected watershed ki profile dena.
+   Kaam: Watershed ID, district, state, area, center coordinates aur key
+   indicators dikhata hai. GIS Explorer aur detailed analysis tak jaane ke
+   links bhi deta hai.
+
+4. GEO-CODED IMAGES  (/geo-images)
+   Maksad: Field photographs ko unke geographic location ke saath dekhna.
+   Kaam: Image type aur text se records filter karna; image kholkar uska
+   title, watershed, coordinates, date aur prototype interpretation dekhna.
+
+5. SPATIAL ANALYSIS  (/spatial-analysis)
+   Maksad: Watershed ki alag-alag spatial conditions ko ek report view mein
+   samajhna.
+   Kaam: Land-use distribution, vegetation trend, water resources, drainage
+   aur mapped interventions ke indicators dikhata hai. Values demo hain.
+
+6. GIS EXPLORER  (/gis)
+   Maksad: Prototype ka primary map-based exploration workflow.
+   Kaam: OpenStreetMap par Leaflet map dikhata hai. User watershed polygon
+   select karke profile dekh sakta hai, ya map par kahin click karke actual
+   clicked latitude/longitude aur nearest watershed context dekh sakta hai.
+   Layer controls se boundaries, water bodies, drainage, field images,
+   interventions, vegetation, land use aur change overlays dikhaye/chhupaye
+   ja sakte hain. Search se watershed ko map par locate kiya ja sakta hai.
+
+7. CHANGE DETECTION  (/change-detection)
+   Maksad: Do time periods ke beech watershed changes samjhana.
+   Kaam: Before/after style comparison aur vegetation, water area,
+   interventions aur review alerts ke sample indicators dikhata hai.
+   Comparison values illustrative mock data hain.
+
+8. ANALYTICS  (/analytics)
+   Maksad: Kai watersheds ke indicators ko ek saath compare karna.
+   Kaam: Watershed vegetation, water-area trend, intervention counts aur
+   district comparison ke charts dikhata hai. Numbers prototype dataset se
+   aate hain.
+
+9. REPORTS  (/reports)
+   Maksad: Watershed assessment ko share karne layak report format mein
+   preview karna.
+   Kaam: Report sections choose karna aur sample assessment preview dekhna.
+   Export controls prototype actions hain.
+
+10. SETTINGS  (/settings)
+    Maksad: User ki appearance preferences aur data-source status dikhana.
+    Kaam: Light/dark appearance toggle aur demo data / 30 m satellite
+    resolution concept ka status dikhata hai. Theme preference browser mein
+    save hoti hai.
+
+
+DEMO KE LIYE SUGGESTED FLOW
+---------------------------
+Overview -> GIS Explorer -> watershed polygon par click -> watershed
+statistics aur coordinates -> field image marker -> Geo-Coded Images ->
+Spatial Analysis -> Change Detection.
+
