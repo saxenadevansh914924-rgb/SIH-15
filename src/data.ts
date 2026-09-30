@@ -11,5 +11,86 @@ export const watersheds:Watershed[]=[
 {id:'WS-OD-KHD-003',name:'Khordha',district:'Khordha',state:'Odisha',area:2510,lat:20.18,lng:85.62,veg:46,water:10.2,interventions:63,coordinates:[[20.24,85.55],[20.25,85.64],[20.2,85.69],[20.14,85.67],[20.12,85.59],[20.18,85.53]]},
 {id:'WS-GJ-AHM-017',name:'Dholka',district:'Ahmedabad',state:'Gujarat',area:2940,lat:22.75,lng:72.44,veg:34,water:5.9,interventions:41,coordinates:[[22.81,72.37],[22.82,72.46],[22.77,72.51],[22.71,72.49],[22.69,72.41],[22.75,72.35]]}
 ];
-export const images=Array.from({length:30},(_,i)=>{const w=watersheds[i%watersheds.length];return{id:`IMG-${String(102+i).padStart(3,'0')}`,watershedId:w.id,title:['Check Dam','Farm Pond','Plantation','Contour Trench','Water Harvesting Structure'][i%5],category:['Check Dam','Farm Pond','Plantation','Soil Conservation','Water Harvesting'][i%5],lat:w.lat+((i%3)-1)*.018,lng:w.lng+((i%4)-1.5)*.02,date:`${String(3+(i%25)).padStart(2,'0')} Jul 2026`,watershed:w.name,district:w.district,imageUrl:`https://images.unsplash.com/photo-${['1500382017468-9049fed747ef','1472396961693-142e6e269027','1511497584788-876760111969'][i%3]}?auto=format&fit=crop&w=700&q=80`}});
+export const images=Array.from({length:30},(_,i)=>{const w=watersheds[i%watersheds.length];return{id:`IMG-${String(102+i).padStart(3,'0')}`,watershedId:w.id,title:['Check Dam','Farm Pond','Plantation','Contour Trench','Water Harvesting Structure'][i%5],category:['Check Dam','Farm Pond','Plantation','Soil Conservation','Water Harvesting'][i%5],lat:w.lat+((i%3)-1)*.018,lng:w.lng+((i%4)-1.5)*.02,date:`${String(3+(i*3%25)).padStart(2,'0')} ${['Mar','Apr','May','Jun','Jul'][Math.floor(i/6)]} 2026`,watershed:w.name,district:w.district,imageUrl:`https://images.unsplash.com/photo-${['1500382017468-9049fed747ef','1472396961693-142e6e269027','1511497584788-876760111969'][i%3]}?auto=format&fit=crop&w=700&q=80`}});
 export const interventions=Array.from({length:40},(_,i)=>{const w=watersheds[i%10];return{id:`INT-${String(401+i)}`,type:['Check Dam','Farm Pond','Contour Trench','Plantation'][i%4],lat:w.lat+((i%5)-2)*.013,lng:w.lng+((i%7)-3)*.011,watershed:w.name,status:i%5===0?'Under construction':'Complete'}});
+
+export type WatershedAnalysis = {
+  landUse: { name: string; value: number }[];
+  vegetationChange: number;
+  waterChange: number;
+  waterAreaHa: number;
+  waterBodies: number;
+  seasonalWaterBodies: number;
+  drainage: { total: number; primary: number; secondary: number; density: number };
+  interventions: { name: string; count: number }[];
+  monthly: { m: string; vegetation: number; waterArea: number; waterIndex: number }[];
+};
+
+// Deterministic, watershed-specific prototype indicators derived from the
+// watershed record so changing the selected basin changes every analysis view.
+export function getWatershedAnalysis(w: Watershed): WatershedAnalysis {
+  const index = Math.max(0, watersheds.findIndex((item) => item.id === w.id));
+  const barren = 5 + ((index * 3 + 1) % 8);
+  const builtUp = 3 + ((index * 2 + 1) % 6);
+  const agriculture = Math.max(1, 100 - w.veg - w.water - barren - builtUp);
+  const vegetationChange = Number((6.8 + ((index * 1.73) % 8.4)).toFixed(1));
+  const waterChange = Number((8.5 + ((index * 2.37) % 14)).toFixed(1));
+  const waterAreaHa = Math.round((w.area * w.water) / 100);
+  const waterBodies = Math.max(5, Math.round(w.area / 280) + index * 3);
+  const seasonalWaterBodies = Math.max(
+    2,
+    Math.round(waterBodies * (0.34 + (index % 4) * 0.055)),
+  );
+  const density = Number((0.2 + index * 0.035).toFixed(2));
+  const totalDrainage = Number(((w.area / 100) * density).toFixed(1));
+  const primary = Number((totalDrainage * (0.27 + (index % 4) * 0.035)).toFixed(1));
+  const weights = [
+    25 + ((index * 4) % 12),
+    20 + ((index * 3) % 10),
+    25 + ((index * 5) % 12),
+  ];
+  const interventionCounts = weights.map((weight) =>
+    Math.round((w.interventions * weight) / 100),
+  );
+  interventionCounts.push(w.interventions - interventionCounts.reduce((a, b) => a + b, 0));
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"];
+  const startVegetation = Math.max(8, w.veg - vegetationChange);
+  const startWaterRatio = Math.max(0.48, 1 - waterChange / 100);
+  const monthly = months.map((m, month) => {
+    const progress = month / (months.length - 1);
+    return {
+      m,
+      vegetation: Number((startVegetation + (w.veg - startVegetation) * progress).toFixed(1)),
+      waterArea: Math.round(waterAreaHa * (startWaterRatio + (1 - startWaterRatio) * progress)),
+      waterIndex: Number((w.water * (startWaterRatio + (1 - startWaterRatio) * progress)).toFixed(1)),
+    };
+  });
+
+  return {
+    landUse: [
+      { name: "Agriculture", value: agriculture },
+      { name: "Vegetation", value: w.veg },
+      { name: "Water", value: w.water },
+      { name: "Barren land", value: barren },
+      { name: "Built-up", value: builtUp },
+    ],
+    vegetationChange,
+    waterChange,
+    waterAreaHa,
+    waterBodies,
+    seasonalWaterBodies,
+    drainage: {
+      total: totalDrainage,
+      primary,
+      secondary: Number((totalDrainage - primary).toFixed(1)),
+      density,
+    },
+    interventions: [
+      { name: "Check dams", count: interventionCounts[0] },
+      { name: "Farm ponds", count: interventionCounts[1] },
+      { name: "Contour trenches", count: interventionCounts[2] },
+      { name: "Plantation areas", count: interventionCounts[3] },
+    ],
+    monthly,
+  };
+}
